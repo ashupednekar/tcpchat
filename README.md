@@ -3,6 +3,9 @@
 
 **tcpchat** is a Go-based chat server that utilizes TCP connections to facilitate communication between users. It provides functionality for user registration, maintains a user IP map, allows the creation of groups, and efficiently routes messages to other clients.
 
+![Uploading Untitled-2024-05-05-1539.png…]()
+
+
 ## Features
 
 - **User Registration**: Users can register themselves on the chat server.
