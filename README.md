@@ -14,6 +14,10 @@
 - **Group Creation**: Users can create groups for specific discussions.
 - **Message Routing**: Efficiently routes messages to appropriate clients based on their intended recipients.
 
+## Design/Plan
+<img width="715" alt="Screenshot 2024-05-06 at 8 03 33 PM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/28bda7dd-98a5-44fd-9a87-f5e11a58472b">
+
+
 ## Contributing
 
 Contributions are welcome! If you find any bugs or have suggestions for improvements, please feel free to open an issue or submit a pull request.
