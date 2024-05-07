@@ -18,10 +18,14 @@ func CreateUser(db *gorm.DB, Name string, IP string) error {
 		return r1.Error
 	}
 	individual_grp := []int{user.ID}
-	fmt.Println("grp users: ", individual_grp)
+	CreateGroup(db, Name, individual_grp)
+	return nil
+}
+
+func CreateGroup(db *gorm.DB, Name string, Users []int) error {
 	r2 := db.Create(&chat.Groups{
 		Name:  Name,
-		Users: individual_grp,
+		Users: Users,
 	})
 	if r2.Error != nil {
 		return r2.Error
@@ -60,12 +64,17 @@ func JoinGroup(db *gorm.DB, Name string, IP string) error {
 	}
 	group := chat.Groups{}
 	grp_query := db.Model(&chat.Groups{}).Where("name = ?", Name)
-	if grp_query.Error == fmt.Errorf("record not found") {
-		fmt.Println("group not present, creating...")
-	}
 	r1 := grp_query.First(&group)
 	if r1.Error != nil {
-		return r1.Error
+		fmt.Println("err: ", r1.Error)
+		if r1.Error.Error() == "record not found" {
+			fmt.Println("group not present, creating...")
+			individual_grp := []int{user.ID}
+			fmt.Println("new grp name: ", Name)
+			return CreateGroup(db, Name, individual_grp)
+		} else {
+			return r1.Error
+		}
 	}
 	group.Users = append(group.Users, user.ID)
 	r2 := grp_query.Update("users", group.Users)
