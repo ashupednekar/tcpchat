@@ -31,16 +31,16 @@ func Migrate(db *gorm.DB) {
 }
 
 type Users struct {
-	ID     int `gorm:"primaryKey"`
-	Name   string
-	IP     string
+	ID     int    `gorm:"primaryKey"`
+	Name   string `gorm:"uniqueIndex"`
+	IP     string `gorm:"uniqueIndex"`
 	Online bool
 }
 
 type Groups struct {
-	ID    int `gorm:"primaryKey"`
-	Name  string
-	Users []int `gorm:"type:json"`
+	ID    int    `gorm:"primaryKey"`
+	Name  string `gorm:"uniqueIndex"`
+	Users []int  `gorm:"type:json"`
 }
 
 type Messages struct {
