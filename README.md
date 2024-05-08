@@ -23,7 +23,7 @@ Here's an overview of the overall design
 
 > Here are the various channels to be used for communication across goroutines, and hence... users 😊
 
-<img width="1015" alt="Screenshot 2024-05-09 at 12 15 09 AM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/ddbccfe6-ef17-4b37-88ad-15ad6876bb01">
+<img width="1015" alt="Screenshot 2024-05-09 at 12 55 40 AM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/7b8a8ef9-5e85-46f5-8aca-458753740718">
 
 
 ## Contributing
