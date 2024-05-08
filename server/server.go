@@ -21,7 +21,8 @@ type Channels struct {
 type Server struct {
 	ListenAddr string
 	ln         net.Listener
-	Chans      Channels
+	ChanMap    map[string](chan string)
+	quitchan   chan struct{}
 	Db         *gorm.DB
 }
 
@@ -33,12 +34,9 @@ type Message struct {
 func NewServer(addr string) *Server {
 	return &Server{
 		ListenAddr: addr,
-		Chans: Channels{
-			RecvChanMap: make(map[string](chan string)),
-			SendChanMap: make(map[string](chan string)),
-			quitchan:    make(chan struct{}),
-		},
-		Db: chat.GetDb(),
+		ChanMap:    make(map[string](chan string)),
+		quitchan:   make(chan struct{}),
+		Db:         chat.GetDb(),
 	}
 }
 
@@ -50,11 +48,8 @@ func (s *Server) Start() error {
 	s.ln = ln
 	s.AcceptLoop()
 
-	<-s.Chans.quitchan
-	for _, c := range s.Chans.RecvChanMap {
-		close(c)
-	}
-	for g, c := range s.Chans.SendChanMap {
+	<-s.quitchan
+	for g, c := range s.ChanMap {
 		c <- fmt.Sprintf("Hey %s Server is closing, goodbye for now", g)
 		close(c)
 	}

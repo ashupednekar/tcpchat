@@ -11,6 +11,16 @@ func GetUser(db *gorm.DB, IP string) (error, chat.Users) {
 	return r.Error, user
 }
 
+func GetIPsFromGroupName(db *gorm.DB, Name string) (error, []string) {
+	group := chat.Groups{}
+	r := db.Model(&chat.Groups{}).Where("name = ?", Name).First(&group)
+	if r.Error != nil {
+		return nil, []string{}
+	}
+	// TODO: filter mapping table and get IP list
+	return nil, []string{}
+}
+
 func GetGroup(db *gorm.DB, Name string) (error, chat.Groups) {
 	grp := chat.Groups{}
 	r := db.Model(&chat.Groups{}).Where("name = ?", Name).First(&grp)

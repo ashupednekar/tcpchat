@@ -8,28 +8,16 @@ import (
 
 	"github.com/ashupednekar/tcpchat/chat/data_adapters/mutators"
 	"github.com/ashupednekar/tcpchat/chat/data_adapters/selectors"
-	"gorm.io/gorm"
 )
 
-func (s *Server) GetSendChan(IP string) chan string {
-	if ch, ok := s.Chans.SendChanMap[IP]; ok {
+func (s *Server) GetChan(IP string) chan string {
+	if ch, ok := s.ChanMap[IP]; ok {
 		return ch // Channel exists, return it
 	}
 
 	// Channel doesn't exist, create a new one
 	newCh := make(chan string)
-	s.Chans.SendChanMap[IP] = newCh
-	return newCh
-}
-
-func (s *Server) GetRecvChan(Name string) chan string {
-	if ch, ok := s.Chans.RecvChanMap[Name]; ok {
-		return ch // Channel exists, return it
-	}
-
-	// Channel doesn't exist, create a new one
-	newCh := make(chan string)
-	s.Chans.RecvChanMap[Name] = newCh
+	s.ChanMap[IP] = newCh
 	return newCh
 }
 
@@ -45,17 +33,18 @@ func (s *Server) HandleConn(conn net.Conn) {
 		msg := buf[:n]
 		println("msg: ", string(msg))
 
-		sendChan := s.GetSendChan(conn.RemoteAddr().String())
+		ch := s.GetChan(conn.RemoteAddr().String())
 
 		go func() {
-			for s := range sendChan {
+			for s := range ch {
+				fmt.Println("to send: ", s)
 				fmt.Fprintf(conn, s)
 			}
 		}()
 
 		switch {
 		case strings.HasPrefix(string(msg), "root:join"):
-			HandleJoin(s.Db, string(msg), conn)
+			HandleJoin(*s, string(msg), conn)
 		case strings.HasPrefix(string(msg), "chat:"):
 			HandleChat(*s, string(msg), conn)
 		default:
@@ -65,11 +54,11 @@ func (s *Server) HandleConn(conn net.Conn) {
 	}
 }
 
-func HandleJoin(db *gorm.DB, msg string, conn net.Conn) {
+func HandleJoin(s Server, msg string, conn net.Conn) {
 	l := strings.Split(string(msg), ":")
 	Name := l[len(l)-2]
 	fmt.Println("New user joining: ", Name)
-	err := mutators.CreateUser(db, Name, conn.RemoteAddr().String())
+	err := mutators.CreateUser(s.Db, Name, conn.RemoteAddr().String())
 	if err != nil {
 		fmt.Fprintf(conn, "error creating user: ", err)
 	}
@@ -80,11 +69,19 @@ func HandleChat(s Server, msg string, conn net.Conn) {
 	if err != nil {
 		fmt.Fprintf(conn, "error retrieving user: ", err)
 	}
-	recv := s.GetRecvChan(user.Name)
 	l := strings.Split(string(msg), ":")
 	receiverName := l[1]
 	text := l[len(l)-2]
 	fmt.Printf("received message from user: %s => %s\n", user.Name, string(msg))
 	mutators.SaveTextMessage(s.Db, conn.RemoteAddr().String(), receiverName, text)
-	recv <- text
+	err, IPs := selectors.GetIPsFromGroupName(s.Db, receiverName)
+	if err != nil {
+		fmt.Fprintf(conn, "group or individual %s not found", receiverName)
+	}
+
+	for _, ip := range IPs {
+		recv := s.GetChan(ip)
+		fmt.Println("recv channel for", receiverName, recv)
+		recv <- text
+	}
 }
