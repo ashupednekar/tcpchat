@@ -25,8 +25,8 @@ func (s *Server) HandleConn(conn net.Conn) {
 		switch {
 		case strings.HasPrefix(string(msg), "root:join"):
 			l := strings.Split(string(msg), ":")
-			Name := l[len(l)-1]
-			fmt.Println("New user joining: ", Name)
+			Name := l[len(l)-2]
+			fmt.Printf("New user joining: |%s| ", Name)
 			err := mutators.CreateUser(s.Db, Name, conn.RemoteAddr().String())
 			if err != nil {
 				fmt.Fprintf(conn, "error creating user: ", err)
@@ -38,7 +38,7 @@ func (s *Server) HandleConn(conn net.Conn) {
 			}
 			fmt.Printf("received message from user: %s => %s\n", user.Name, string(msg))
 			l := strings.Split(string(msg), ":")
-			mutators.SaveTextMessage(s.Db, conn.RemoteAddr().String(), l[1], l[len(l)-1])
+			mutators.SaveTextMessage(s.Db, conn.RemoteAddr().String(), l[1], l[len(l)-2])
 		default:
 			fmt.Fprintf(conn, "invalid payload received, skipping")
 		}
