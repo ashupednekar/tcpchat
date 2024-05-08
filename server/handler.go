@@ -81,7 +81,6 @@ func HandleChat(s Server, msg string, conn net.Conn) {
 
 	for _, ip := range IPs {
 		recv := s.GetChan(ip)
-		fmt.Println("recv channel for", receiverName, recv)
 		recv <- text
 	}
 }

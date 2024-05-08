@@ -1,9 +1,11 @@
 package mutators
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/ashupednekar/tcpchat/chat"
+	"github.com/ashupednekar/tcpchat/chat/data_adapters/selectors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -71,4 +73,14 @@ func TestSaveMessage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+// TODO: move alongside selectors
+func TestGetIPFromGroupName(t *testing.T) {
+	db := chat.GetDb()
+	err, IPs := selectors.GetIPsFromGroupName(db, "techtalks")
+	if err != nil {
+		t.Fatal(err)
+	}
+	fmt.Println("IPs: ", IPs)
 }
