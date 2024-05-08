@@ -27,7 +27,7 @@ func GetDb() *gorm.DB {
 }
 
 func Migrate(db *gorm.DB) {
-	db.AutoMigrate(&Users{}, &Groups{}, &Messages{})
+	db.AutoMigrate(&Users{}, &Groups{}, &GroupUserMap{}, &Messages{})
 }
 
 type Users struct {
@@ -38,9 +38,16 @@ type Users struct {
 }
 
 type Groups struct {
-	ID    int    `gorm:"primaryKey"`
-	Name  string `gorm:"uniqueIndex"`
-	Users []int  `gorm:"type:json"`
+	ID   int    `gorm:"primaryKey"`
+	Name string `gorm:"uniqueIndex"`
+}
+
+type GroupUserMap struct {
+	ID      int `gorm:"primaryKey"`
+	GroupID int
+	Group   Groups `gorm:"constraint.OnDelete:CASCADE;"`
+	UserID  int
+	User    Users `gorm:"constraint.OnDelete:CASCADE"`
 }
 
 type Messages struct {

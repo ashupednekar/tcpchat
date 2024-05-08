@@ -17,50 +17,56 @@ func CreateUser(db *gorm.DB, Name string, IP string) error {
 	if r1.Error != nil {
 		return r1.Error
 	}
-	individual_grp := []int{user.ID}
-	CreateGroup(db, Name, individual_grp)
-	return nil
+	err, grp := CreateGroup(db, Name)
+	err1 := GroupAdd(db, grp, user)
+	if err1 != nil {
+		return err1
+	}
+	return err
 }
 
-func CreateGroup(db *gorm.DB, Name string, Users []int) error {
-	r2 := db.Create(&chat.Groups{
-		Name:  Name,
-		Users: Users,
+func GroupAdd(db *gorm.DB, Group chat.Groups, User chat.Users) error {
+	fmt.Printf("Adding user %s to group %s\n", User.Name, Group.Name)
+	r := db.Create(&chat.GroupUserMap{
+		Group: Group,
+		User:  User,
 	})
-	if r2.Error != nil {
-		return r2.Error
-	}
-	return nil
+	return r.Error
+}
+
+func CreateGroup(db *gorm.DB, Name string) (error, chat.Groups) {
+	grp := chat.Groups{Name: Name}
+	r := db.Create(&grp)
+	return r.Error, grp
 }
 
 func MarkOnline(db *gorm.DB, IP string) error {
 	r := db.Model(&chat.Users{}).Where("ip = ?", IP).Update("online", true)
-	if r.Error != nil {
-		return r.Error
-	}
 	if r.RowsAffected != 1 {
 		return fmt.Errorf("no rows changed")
 	}
-	return nil
+	return r.Error
 }
 
 func MarkOffline(db *gorm.DB, IP string) error {
 	r := db.Model(&chat.Users{}).Where("ip = ?", IP).Update("online", false)
-	if r.Error != nil {
-		return r.Error
-	}
 	if r.RowsAffected != 1 {
 		return fmt.Errorf("no rows changed")
 	}
 	fmt.Println(r.RowsAffected)
-	return nil
+	return r.Error
+}
+
+func GetUser(db *gorm.DB, IP string) (error, chat.Users) {
+	user := chat.Users{}
+	r := db.Model(&chat.Users{}).Where("ip = ?", IP).First(&user)
+	return r.Error, user
 }
 
 func JoinGroup(db *gorm.DB, Name string, IP string) error {
-	user := chat.Users{}
-	r := db.Model(&chat.Users{}).Where("ip = ?", IP).First(&user)
-	if r.Error != nil {
-		return r.Error
+	err, user := GetUser(db, IP)
+	if err != nil {
+		return err
 	}
 	group := chat.Groups{}
 	grp_query := db.Model(&chat.Groups{}).Where("name = ?", Name)
@@ -69,20 +75,16 @@ func JoinGroup(db *gorm.DB, Name string, IP string) error {
 		fmt.Println("err: ", r1.Error)
 		if r1.Error.Error() == "record not found" {
 			fmt.Println("group not present, creating...")
-			individual_grp := []int{user.ID}
 			fmt.Println("new grp name: ", Name)
-			return CreateGroup(db, Name, individual_grp)
+			err, grp := CreateGroup(db, Name)
+			err1 := GroupAdd(db, grp, user)
+			if err1 != nil {
+				return err1
+			}
+			return err
 		} else {
 			return r1.Error
 		}
-	}
-	group.Users = append(group.Users, user.ID)
-	r2 := grp_query.Update("users", group.Users)
-	if r2.Error != nil {
-		return r2.Error
-	}
-	if r2.RowsAffected != 1 {
-		return fmt.Errorf("no rows changed")
 	}
 	return nil
 }
