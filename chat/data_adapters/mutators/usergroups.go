@@ -75,7 +75,7 @@ func JoinGroup(db *gorm.DB, Name string, IP string) error {
 		fmt.Println("err: ", r1.Error)
 		if r1.Error.Error() == "record not found" {
 			fmt.Println("group not present, creating...")
-			fmt.Println("new grp name: ", Name)
+			fmt.Println("new group name: ", Name)
 			err, grp := CreateGroup(db, Name)
 			err1 := GroupAdd(db, grp, user)
 			if err1 != nil {
