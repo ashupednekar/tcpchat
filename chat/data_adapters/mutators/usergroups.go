@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ashupednekar/tcpchat/chat"
+	"github.com/ashupednekar/tcpchat/chat/data_adapters/selectors"
 	"gorm.io/gorm"
 )
 
@@ -57,14 +58,8 @@ func MarkOffline(db *gorm.DB, IP string) error {
 	return r.Error
 }
 
-func GetUser(db *gorm.DB, IP string) (error, chat.Users) {
-	user := chat.Users{}
-	r := db.Model(&chat.Users{}).Where("ip = ?", IP).First(&user)
-	return r.Error, user
-}
-
 func JoinGroup(db *gorm.DB, Name string, IP string) error {
-	err, user := GetUser(db, IP)
+	err, user := selectors.GetUser(db, IP)
 	if err != nil {
 		return err
 	}
