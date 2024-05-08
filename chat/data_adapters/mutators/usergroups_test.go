@@ -64,3 +64,11 @@ func TestJoinExistingGroup(t *testing.T) {
 		t.Fatal(err2)
 	}
 }
+
+func TestSaveMessage(t *testing.T) {
+	db := chat.GetDb()
+	err := SaveTextMessage(db, "192.168.0.1:50001", "jane", "Hey Jane, what's up!")
+	if err != nil {
+		t.Fatal(err)
+	}
+}

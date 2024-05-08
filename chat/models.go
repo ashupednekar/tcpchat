@@ -57,5 +57,5 @@ type Messages struct {
 	ToID   int
 	To     Groups `gorm:"constraint:OnDelete:CASCADE;"`
 	Text   sql.NullString
-	File   sql.NullByte
+	File   sql.NullByte // TODO: later
 }
