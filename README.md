@@ -19,7 +19,7 @@ Here's an overview of the overall design
 
 > Following diagram illustrates the actions to be performed upon receiving messages conforming to these specific formats, and also covers the database design
 
-<img width="1015" alt="Screenshot 2024-05-06 at 8 03 33 PM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/28bda7dd-98a5-44fd-9a87-f5e11a58472b">
+<img width="1015" alt="Screenshot 2024-05-06 at 8 03 33 PM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/bbcd4e52-4356-46ef-88c5-40147401529a">
 
 > Here are the various channels to be used for communication across goroutines, and hence... users 😊
 
