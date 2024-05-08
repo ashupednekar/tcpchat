@@ -15,7 +15,15 @@
 - **Message Routing**: Efficiently routes messages to appropriate clients based on their intended recipients.
 
 ## Design/Plan
+Here's an overview of the overall design
+
+> Following diagram illustrates the actions to be performed upon receiving messages conforming to these specific formats, and also covers the database design
+
 <img width="1015" alt="Screenshot 2024-05-06 at 8 03 33 PM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/28bda7dd-98a5-44fd-9a87-f5e11a58472b">
+
+> Here are the various channels to be used for communication across goroutines, and hence... users 😊
+
+<img width="1015" alt="Screenshot 2024-05-09 at 12 15 09 AM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/ddbccfe6-ef17-4b37-88ad-15ad6876bb01">
 
 
 ## Contributing
