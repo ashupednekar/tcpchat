@@ -12,10 +12,10 @@ import (
 // TODO: figure out a way to use composition with ashupednekar/gotcp package
 
 type Channels struct {
-	UserInputMap   map[string](chan string)
-	GrpReceiveChan map[string](chan string)
-	Msgchan        chan Message
-	quitchan       chan struct{}
+	RecvChanMap map[string](chan string)
+	SendChanMap map[string](chan string)
+	Msgchan     chan Message
+	quitchan    chan struct{}
 }
 
 type Server struct {
@@ -34,9 +34,9 @@ func NewServer(addr string) *Server {
 	return &Server{
 		ListenAddr: addr,
 		Chans: Channels{
-			UserInputMap:   make(map[string](chan string)),
-			GrpReceiveChan: make(map[string](chan string)),
-			quitchan:       make(chan struct{}),
+			RecvChanMap: make(map[string](chan string)),
+			SendChanMap: make(map[string](chan string)),
+			quitchan:    make(chan struct{}),
 		},
 		Db: chat.GetDb(),
 	}
@@ -51,10 +51,10 @@ func (s *Server) Start() error {
 	s.AcceptLoop()
 
 	<-s.Chans.quitchan
-	for _, c := range s.Chans.UserInputMap {
+	for _, c := range s.Chans.RecvChanMap {
 		close(c)
 	}
-	for g, c := range s.Chans.GrpReceiveChan {
+	for g, c := range s.Chans.SendChanMap {
 		c <- fmt.Sprintf("Hey %s Server is closing, goodbye for now", g)
 		close(c)
 	}
