@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/ashupednekar/gotcp/server"
 	"github.com/ashupednekar/tcpchat/chat"
+	"github.com/ashupednekar/tcpchat/server"
 )
 
 func main() {

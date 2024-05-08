@@ -3,7 +3,6 @@ module github.com/ashupednekar/tcpchat
 go 1.22.1
 
 require (
-	github.com/ashupednekar/gotcp v0.0.0-20240505092414-d1cfa1b035db // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20231201235250-de7065d80cb9 // indirect
