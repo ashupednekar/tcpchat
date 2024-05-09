@@ -1,8 +1,6 @@
 package selectors
 
 import (
-	"fmt"
-
 	"github.com/ashupednekar/tcpchat/chat"
 	"gorm.io/gorm"
 )
@@ -23,11 +21,12 @@ func GetIPsFromGroupName(db *gorm.DB, Name string) (error, []string) {
 	var mappings []chat.GroupUserMap
 	db.Model(&chat.GroupUserMap{}).Where("group_id = ?", group.ID).Find(&mappings)
 	for _, mapping := range mappings {
-		fmt.Println("ip: ", mapping.User)
-		IPs = append(IPs, mapping.User.IP)
+		userID := mapping.UserID
+		user := chat.Users{}
+		db.Model(&chat.Users{}).Where("id = ?", userID).First(&user)
+		IPs = append(IPs, user.IP)
 	}
-	fmt.Println("IPs: ", IPs)
-	return nil, []string{}
+	return nil, IPs
 }
 
 func GetGroup(db *gorm.DB, Name string) (error, chat.Groups) {
