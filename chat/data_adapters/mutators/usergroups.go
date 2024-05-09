@@ -19,11 +19,14 @@ func CreateUser(db *gorm.DB, Name string, IP string) error {
 		return r1.Error
 	}
 	err, grp := CreateGroup(db, Name)
+	if err != nil {
+		return err
+	}
 	err1 := GroupAdd(db, grp, user)
 	if err1 != nil {
 		return err1
 	}
-	return err
+	return nil
 }
 
 func GroupAdd(db *gorm.DB, Group chat.Groups, User chat.Users) error {
@@ -81,5 +84,6 @@ func JoinGroup(db *gorm.DB, Name string, IP string) error {
 			return r1.Error
 		}
 	}
-	return nil
+	err2 := GroupAdd(db, group, user)
+	return err2
 }

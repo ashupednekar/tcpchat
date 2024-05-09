@@ -45,7 +45,7 @@ type Groups struct {
 type GroupUserMap struct {
 	ID      int `gorm:"primaryKey"`
 	GroupID int
-	Group   Groups `gorm:"constraint.OnDelete:CASCADE;"`
+	Group   Groups `gorm:"constraint.OnDelete:CASCADE;"` // TODO: uniq together.. getting ERROR: column "," does not exist (SQLSTATE 42703)
 	UserID  int
 	User    Users `gorm:"constraint.OnDelete:CASCADE"`
 }
