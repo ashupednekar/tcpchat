@@ -38,7 +38,7 @@ func (s *Server) HandleConn(conn net.Conn) {
 		go func() {
 			for s := range ch {
 				fmt.Println("to send: ", s)
-				fmt.Fprintf(conn, s)
+				fmt.Fprint(conn, s)
 			}
 		}()
 
@@ -81,6 +81,6 @@ func HandleChat(s Server, msg string, conn net.Conn) {
 
 	for _, ip := range IPs {
 		recv := s.GetChan(ip)
-		recv <- text
+		recv <- fmt.Sprintf("chat:%s:%s:", receiverName, text)
 	}
 }
