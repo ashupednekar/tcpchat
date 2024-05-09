@@ -44,7 +44,9 @@ func (s *Server) HandleConn(conn net.Conn) {
 
 		switch {
 		case strings.HasPrefix(string(msg), "root:join"):
-			HandleJoin(*s, string(msg), conn)
+			HandleRootJoin(*s, string(msg), conn)
+		case strings.HasPrefix(string(msg), "group:join"):
+			HandleGroupJoin(*s, string(msg), conn)
 		case strings.HasPrefix(string(msg), "chat:"):
 			HandleChat(*s, string(msg), conn)
 		default:
@@ -54,13 +56,22 @@ func (s *Server) HandleConn(conn net.Conn) {
 	}
 }
 
-func HandleJoin(s Server, msg string, conn net.Conn) {
+func HandleGroupJoin(s Server, msg string, conn net.Conn) {
+	l := strings.Split(string(msg), ":")
+	Group := l[len(l)-2]
+	err := mutators.JoinGroup(s.Db, Group, conn.RemoteAddr().String())
+	if err != nil {
+		fmt.Fprintf(conn, "error creating/joining group, %s", err)
+	}
+}
+
+func HandleRootJoin(s Server, msg string, conn net.Conn) {
 	l := strings.Split(string(msg), ":")
 	Name := l[len(l)-2]
 	fmt.Println("New user joining: ", Name)
 	err := mutators.CreateUser(s.Db, Name, conn.RemoteAddr().String())
 	if err != nil {
-		fmt.Fprintf(conn, "error creating user: ", err)
+		fmt.Fprintf(conn, "error creating user: %s", err)
 	}
 }
 
@@ -81,6 +92,6 @@ func HandleChat(s Server, msg string, conn net.Conn) {
 
 	for _, ip := range IPs {
 		recv := s.GetChan(ip)
-		recv <- fmt.Sprintf("chat:%s:%s:", receiverName, text)
+		recv <- fmt.Sprintf("chat:%s:%s:", user.Name, text)
 	}
 }
