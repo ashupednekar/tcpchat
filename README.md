@@ -27,9 +27,14 @@ Here's an overview of the overall design
 
 ## Demo
 
-Here's a quick demo, group chats coming soon
+Here's a quick demo
 
 https://www.veed.io/view/e3befc40-1007-44aa-80ba-bc3c7b364df8?panel=share
+
+> Group Chat
+
+<img width="1015" alt="Screenshot 2024-05-09 at 10 24 32 PM" src="https://github.com/ashupednekar/tcpchat/assets/25405037/890fee60-231d-495f-aeeb-ebb7b3c78836">
+
 
 ## Contributing
 
